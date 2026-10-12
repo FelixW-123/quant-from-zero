@@ -105,3 +105,58 @@ $('fee-range').addEventListener('input',e=>{$('fee-value').textContent=`${Number
 $('run-backtest').addEventListener('click',runBacktest);
 
 renderCandles();renderLessons();
+
+const stages = [
+  {name:'读懂市场的语言',time:'第 1–2 周',goal:'能解释 K 线、成交时点与一笔交易的完整过程。',analogy:'先学会看地图，再决定走哪条路。',tasks:['用上方 K 线图任选 3 天，手写开高低收和涨跌方向。','完成六节入门课的测验，并用一句话解释“量化”。','画一张交易流程图：观察 → 发信号 → 下一时点下单 → 退出。'],practice:'模拟练习：用 1,000 元虚拟资金，记录 5 笔“如果……就……”的交易想法，不看结果先写规则。',shortcut:'只背 OHLC、信号、执行时点三个词；其他词遇到再查。',pass:'能说明为什么今天收盘生成的信号，不能在今天开盘成交。',resources:[['SEC 投资入门','https://www.investor.gov/introduction-investing'],['本站 K 线实验室','#chart-lab']]},
+  {name:'数据与 Python',time:'第 3–4 周',goal:'把 CSV 价格表读进程序，并检查数据质量。',analogy:'做菜先检查食材；脏数据会把规则煮坏。',tasks:['下载 sample_prices.csv，找出任意两天的开高低收。','运行 quant_lab.py，并看懂它如何逐行读取 CSV。','故意把一行的最高价改得低于收盘价，观察程序如何报错。'],practice:'真实数据练习：从你信任的数据提供方导出一只股票的日线 CSV，只做读取与数据检查，记录来源及是否复权。',shortcut:'先用标准库 csv 跑通流程，再学 pandas；不要一开始就装复杂框架。',pass:'能解释缺失日期、拆股与复权价格为什么会影响回测。',resources:[['Python 官方教程','https://docs.python.org/3/tutorial/'],['pandas 入门','https://pandas.pydata.org/docs/getting_started/']]},
+  {name:'把想法写成规则',time:'第 5–6 周',goal:'写出别人也能复现的入场、出场和仓位规则。',analogy:'菜谱要写“中火 5 分钟”，不能写“差不多”。',tasks:['写出 3 日与 7 日均线规则的入场和退出条件。','指出信号在哪一天收盘产生，订单在哪一天开盘执行。','写下至少一个可能让规则失败的市场情景。'],practice:'模拟练习：先锁定规则，再在未看过的后半段数据上测试；不许看到亏损才改参数。',shortcut:'一句话模板：如果 [已知数据满足条件]，就在 [下一可执行时点] 买/卖 [计划数量]。',pass:'规则里同时有数据、时间、行动、退出与仓位。',resources:[['本站均线回测','#strategy'],['练习手册','./EXERCISES.md']]},
+  {name:'回测与识别陷阱',time:'第 7–9 周',goal:'比较基准、费用、回撤与不同时间段，而非只看收益。',analogy:'旧试卷能查漏补缺，但不是新考试的答案。',tasks:['在页面把成本从 0% 调到 0.5%，写下结果变化。','运行 Python 脚本，比较策略和一直持有的最终资金及最大回撤。','把一段数据分成训练段与检验段，检验段只运行一次。'],practice:'真实历史数据练习：换用自己导出的 CSV，写一页报告，列出数据来源、费用假设、基准和至少 3 个缺陷。',shortcut:'先问“如果加入费用和坏年份，结论还成立吗？”；不要只追最漂亮的曲线。',pass:'能指出未来函数、参数过拟合、幸存者偏差三类风险。',resources:[['SEC 关于回测表现','https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-47'],['本站回测实验室','#strategy']]},
+  {name:'仓位与组合风险',time:'第 10–11 周',goal:'把每笔计划风险、单只股票资金上限与账户总风险写成约束。',analogy:'旅行前决定每件行李占多少空间，还要留出应急余量。',tasks:['用下方计算器算 10,000 美元账户、1% 风险、100/95 买入/止损的股数。','把止损价改成 90，再解释股数为什么变化。','为两个同时持有的仓位写出总资金占比与合计计划风险。'],practice:'模拟练习：连续记录 10 笔纸面交易；每笔先填股数、计划风险和单股上限，再记录结果。',shortcut:'先用固定风险预算和资金上限双重约束；复杂优化模型以后再学。',pass:'能解释止损价不保证成交价，以及多个相关股票可能一起亏损。',resources:[['本站仓位计算器','#position-lab'],['SEC 分散投资','https://www.investor.gov/introduction-investing/getting-started/asset-allocation']]},
+  {name:'独立研究与纸面交易',time:'第 12 周起',goal:'建立可复现的研究记录，先验证执行纪律。',analogy:'飞行员先在模拟舱反复练习，再讨论真正起飞。',tasks:['冻结一个策略版本，保存参数、数据来源、代码和运行结果。','纸面跟踪至少 20 个交易日，记录理论信号与实际可执行价格差异。','写一页复盘：支持、反对、何时停止使用这条规则。'],practice:'毕业作品：提交规则卡、数据说明、回测报告、仓位方案、纸面交易日志和失败案例。',shortcut:'每次只改一个假设，保存旧版本；如果没有日志，就无法知道进步来自哪里。',pass:'能独立复现结果，并清楚说明不确定性、成本、止损和策略停用条件。',resources:[['练习手册','./EXERCISES.md'],['SEC 关于历史表现','https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-47']]}
+];
+
+let completedTasks = new Set();
+try { completedTasks = new Set(JSON.parse(localStorage.getItem('quant-stage-tasks') || '[]')); } catch (_) {}
+function renderStages(){
+  $('stage-list').innerHTML=stages.map((s,i)=>`<article class="stage-card"><div class="stage-number">${String(i+1).padStart(2,'0')}</div><div class="stage-main"><div class="stage-top"><div><span class="mini-label">阶段 ${i+1} · ${s.time}</span><h3>${s.name}</h3></div><span class="stage-count">${s.tasks.filter((_,j)=>completedTasks.has(`${i}-${j}`)).length} / 3</span></div><p class="stage-goal">${s.goal}</p><p class="stage-analogy">生活例子：${s.analogy}</p><div class="stage-columns"><div><b>三个行动任务</b><div class="stage-tasks">${s.tasks.map((t,j)=>`<label><input type="checkbox" data-stage-task="${i}-${j}" ${completedTasks.has(`${i}-${j}`)?'checked':''}><span>${t}</span></label>`).join('')}</div></div><div class="stage-sidebar"><b>实战练习</b><p>${s.practice}</p><b>捷径</b><p>${s.shortcut}</p></div></div><div class="stage-footer"><span><b>过关标准：</b>${s.pass}</span><div>${s.resources.map(([label,url])=>`<a href="${url}" ${url.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${label} ↗</a>`).join('')}</div></div></div></article>`).join('');
+  const count=[...completedTasks].filter(k=>/^\d+-[0-2]$/.test(k)).length;
+  $('stage-progress').textContent=`已完成 ${count} / 18 项任务`;
+  $('stage-progress-fill').style.width=`${count/18*100}%`;
+}
+document.addEventListener('change',e=>{
+  if(!e.target.matches('[data-stage-task]'))return;
+  const key=e.target.dataset.stageTask;
+  if(e.target.checked)completedTasks.add(key);else completedTasks.delete(key);
+  try{localStorage.setItem('quant-stage-tasks',JSON.stringify([...completedTasks]));}catch(_){}
+  renderStages();
+});
+
+function positionSize(account,riskPct,entry,stop,allocationPct){
+  if(![account,riskPct,entry,stop,allocationPct].every(Number.isFinite) || account<=0 || entry<=0 || stop<=0 || stop>=entry || riskPct<=0 || riskPct>100 || allocationPct<=0 || allocationPct>100) throw new Error('请输入有效的正数；多头案例的止损价须低于买入价，百分比须在 0 到 100 之间。');
+  const budget=account*riskPct/100;
+  const perShare=entry-stop;
+  const riskShares=Math.floor(budget/perShare);
+  const allocationShares=Math.floor(account*allocationPct/100/entry);
+  const cashShares=Math.floor(account/entry);
+  const shares=Math.max(0,Math.min(riskShares,allocationShares,cashShares));
+  const binding=shares===riskShares?'风险预算':shares===allocationShares?'单股资金上限':'可用资金';
+  return {shares,budget,plannedLoss:shares*perShare,cost:shares*entry,allocation:shares*entry/account*100,binding};
+}
+const money=v=>`$${v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+function updatePosition(e){
+  if(e)e.preventDefault();
+  try{
+    const result=positionSize(Number($('account-input').value),Number($('risk-input').value),Number($('entry-input').value),Number($('stop-input').value),Number($('allocation-input').value));
+    $('position-error').hidden=true;
+    $('shares-output').textContent=String(result.shares);
+    $('budget-output').textContent=money(result.budget);
+    $('loss-output').textContent=money(result.plannedLoss);
+    $('cost-output').textContent=money(result.cost);
+    $('allocation-output').textContent=`${result.allocation.toFixed(2)}%`;
+    $('allocation-fill').style.width=`${result.allocation}%`;
+    $('position-explain').textContent=result.shares?`这次由「${result.binding}」决定最多股数。按止损价估算的亏损是计划值，实际成交可能更差。`:'在当前风险或资金上限下，买不到 1 股；可调整案例数字再试。';
+  }catch(err){$('position-error').textContent=err.message;$('position-error').hidden=false;}
+}
+$('position-form').addEventListener('submit',updatePosition);
+['account-input','risk-input','entry-input','stop-input','allocation-input'].forEach(id=>$(id).addEventListener('input',updatePosition));
+renderStages();updatePosition();
